@@ -1,5 +1,16 @@
-// This is a comment
-// uncomment the line below if you want to write a filterscript
+/*
+			Update system 1.0 (without dialog and using manual command)
+			By: solsticedev
+
+			Description:
+			This script can add your updates via ingame and
+			no need to compile again and again on pawn, its
+			easy to use and friendly (maybe lol).
+
+			Changelog 1.0:
+			* Creating the file.
+
+*/
 #define FILTERSCRIPT
 
 #include <a_samp>
@@ -13,7 +24,7 @@
 #define MYSQL_HOSTNAME		"localhost"
 #define MYSQL_USERNAME		"root"
 #define MYSQL_PASSWORD		""
-#define MYSQL_DATABASE		"ablodm"
+#define MYSQL_DATABASE		"test"
 
 new MySQL: Database;
 
@@ -41,8 +52,8 @@ CMD:addupdate(playerid, params[])
 	;
 
 	if(!IsPlayerAdmin(playerid)) return SendClientMessage(playerid, -1, "You must be an admin to use this command.");
-	if(sscanf(params, "is[128]", status, text)) 
-	{ 
+	if(sscanf(params, "is[128]", status, text))
+	{
 		SendClientMessage(playerid, -1, "[USAGE]: {AFAFAF}/addupdate [status] [text]");
 		SendClientMessage(playerid, -1, "Use 1 if you want to display the update as added, 2 if you want to display it as changed, 3 as fixed and 4 as removed.");
 		return 1;
@@ -55,7 +66,7 @@ CMD:addupdate(playerid, params[])
 
 CMD:removeupdate(playerid, params[])
 {
-	new 
+	new
 		updateid, query[128]
 	;
 
@@ -69,7 +80,7 @@ CMD:removeupdate(playerid, params[])
 
 CMD:updates(playerid, params[])
 {
-	new 
+	new
 		query[128]
 	;
 
@@ -84,7 +95,7 @@ public Player_ViewUpdates(playerid)
 	if(cache_num_rows())
 	{
 		new
-			updateid, addedby[24], text[128], status, sstatus[128], dateadded[30], string[500] // the reason this is huge is because there might be a lot of updates so it should be bigger, you can change this any time you want.
+			updateid, addedby[24], text[128], status, sstatus[128], dateadded[30], string[1024] // the reason this is huge is because there might be a lot of updates so it should be bigger, you can change this any time you want.
 		;
 
 		format(string, sizeof(string), "This is a list of the new server updates on the last revision:\n\n");
@@ -117,12 +128,11 @@ public Player_ViewUpdates(playerid)
 
 forward OnPlayerDeleteUpdate(playerid, updateid);
 public OnPlayerDeleteUpdate(playerid, updateid)
-{	
+{
 	if(cache_num_rows())
 	{
 		new
-			string[128], query[128]
-		;
+			string[128], query[128];
 
 		format(string, sizeof(string), "You have successfully removed UpdateID %d from the database.", updateid);
 		SendClientMessage(playerid, -1, string);
@@ -130,7 +140,7 @@ public OnPlayerDeleteUpdate(playerid, updateid)
 		mysql_format(Database, query, sizeof(query), "DELETE FROM `updates` WHERE `UpdateID` = '%i'", updateid);
 		mysql_query(Database, query);
 	}
-	else 
+	else
 	{
 		SendClientMessage(playerid, -1, "That UpdateID was not found in the database.");
 	}
@@ -138,15 +148,15 @@ public OnPlayerDeleteUpdate(playerid, updateid)
 }
 
 forward OnPlayerAddUpdate(playerid, status, text[]);
-public OnPlayerAddUpdate(playerid, status, text[]) 
+public OnPlayerAddUpdate(playerid, status, text[])
 {
-	new 
+	new
 		updateid = cache_insert_id(), string[128], sstring[100]
 	;
 
 	switch(status)
 	{
-		case 1: sstring = "Added"; 
+		case 1: sstring = "Added";
 		case 2: sstring = "Changed";
 		case 3: sstring = "Fixed";
 		case 4: sstring = "Removed";
@@ -166,9 +176,8 @@ GetName(playerid)
 
 ReturnDate()
 {
-	new sendString[90], MonthStr[40], month, day, year;
-	new hour, minute, second;
-	
+	new sendString[90], MonthStr[40], month, day, year, hour, minute, second;
+
 	gettime(hour, minute, second);
 	getdate(year, month, day);
 	switch(month)
@@ -186,7 +195,7 @@ ReturnDate()
 	    case 11: MonthStr = "November";
 	    case 12: MonthStr = "December";
 	}
-	
+
 	format(sendString, 90, "%s %d, %d %02d:%02d:%02d", MonthStr, day, year, hour, minute, second);
 	return sendString;
 }
