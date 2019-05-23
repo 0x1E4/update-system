@@ -162,7 +162,7 @@ public OnPlayerAddUpdate(playerid, status, text[])
 		case 4: sstring = "Removed";
 	}
 
-	format(string, sizeof(string), "You have successfully a new update - [ID: %d] - [Text: %s] - [Status: %s]", updateid, text, sstring);
+	format(string, sizeof(string), "You have successfully created a new update - [ID: %d] - [Text: %s] - [Status: %s]", updateid, text, sstring);
 	SendClientMessage(playerid, -1, string);
 	return 1;
 }
